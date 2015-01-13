@@ -1,0 +1,6 @@
+node_modules
+
+run/*.pid
+data/*.tsv
+results/*.txt
+graphs/*.png

@@ -1,0 +1,71 @@
+#!/bin/sh
+# RESOURCES:
+# Blog - http://www.gnuplotting.org/
+# Blog - http://gnuplot-surprising.blogspot.com/
+# Colors, Line Types - http://kunak.phsx.ku.edu/~sergei/Gnuplot/line_point_types.html
+# Linespoints - http://www.gnuplotting.org/tag/linespoints/
+# Gnuplot and ab - http://www.bradlanders.com/2013/04/15/apache-bench-and-gnuplot-youre-probably-doing-it-wrong/
+
+gnuplot << EOF
+reset
+
+# The graph title
+set title "Request Times Benchmark $2"
+
+# Where to place the legend/key
+set key left top
+
+# Label the x-axis
+set xlabel 'requests'
+
+# Label the y-axis
+set ylabel "ttime (ms)"
+
+# set terminal size
+set term png truecolor size 1024,768 enhanced font 'Courier,10'
+
+# This sets the aspect ratio of the graph
+set size 1, 1
+
+# Tell gnuplot to use tabs as the delimiter instead of spaces (default)
+set datafile separator '\t'
+
+# The file we'll write to
+set output "graphs/$2.png"
+
+# Specify that the y-series data is time data
+set ydata time
+
+# Specify the *input* format of the time data
+set timefmt "%S"
+
+# Draw gridlines oriented on the y axis
+set grid y
+
+# Specify the *output* format for the y-axis tick labels
+set format y "%M:%S"
+
+# define axes
+set xrange [0:*]
+set yrange [0:*]
+
+# padding
+set lmargin at screen 0.1
+set rmargin at screen 0.95
+# set bmargin at screen 0.01
+# set tmargin at screen 0.01
+
+# remove border on top and right and set color to gray
+set style line 11 lc rgb "#808080" lt 1
+set border 3 back ls 11
+set tics nomirror
+
+# define grid
+set style line 12 lc rgb '#808080' lt 0 lw 1
+set grid back ls 12
+
+plot '$1' using (column(0)):5 every ::1 with filledcurves y1=0 fs transparent solid .75 lc rgb "forest-green" title "ttime", \
+	 '$1' using (column(0)):4 every ::1 with filledcurves y1=0 fs transparent solid .50 lc rgb "gold" title "dtime", \
+	 '$1' using (column(0)):3 every ::1 with filledcurves y1=0 fs transparent solid .25 lc rgb "red" title "ctime"
+exit
+EOF
