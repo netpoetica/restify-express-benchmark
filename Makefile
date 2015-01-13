@@ -23,12 +23,6 @@ pidDir=run
 expressPid=$(pidDir)/express.pid
 restifyPid=$(pidDir)/restify.pid
 
-# Path to ab executable - it must the -l option
-# see: http://adventuresincoding.com/2012/05/how-to-get-apachebenchab-to-work-on-mac-os-x-lion
-# or try to install with homebrew via "brew install homebrew/apache/ab" - you may have to tap
-ab=ab
-# /usr/local/bin/ab-2.3
-
 date := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 all: start plot-express plot-restify stop
@@ -55,7 +49,7 @@ stop:
 
 bench-express:
 	$(info -> Running Apache Bench on Express Server on $(EXPRESS_URL))
-	@$(ab) -g "$(dataDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-express.tsv" -r -v $(verbosity) -n $(requests) -c $(concurrency) $(EXPRESS_URL) > $(resultsDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-express.txt
+	@ab -r -l -k -g "$(dataDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-express.tsv" -v $(verbosity) -n $(requests) -c $(concurrency) $(EXPRESS_URL) > $(resultsDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-express.txt
 
 plot-express: bench-express
 	$(info -> Plotting Results of Apache Bench on Express Server)
@@ -63,7 +57,7 @@ plot-express: bench-express
 
 bench-restify:
 	$(info -> Running Apache Bench on Restify Server on $(RESTIFY_URL))
-	@$(ab) -g "$(dataDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-restify.tsv" -r -v $(verbosity) -n $(requests) -c $(concurrency) $(RESTIFY_URL) > $(resultsDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-restify.txt
+	@ab -r -l -k -g "$(dataDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-restify.tsv" -v $(verbosity) -n $(requests) -c $(concurrency) $(RESTIFY_URL) > $(resultsDir)/$(date)-$(requests)-requests-$(concurrency)-concurrent-restify.txt
 
 plot-restify: bench-restify
 	$(info -> Plotting Results of Apache Bench on Restify Server)
